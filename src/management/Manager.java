@@ -1,13 +1,14 @@
 
 package management;
 
-import java.util.ArrayList;
-
+import model.Deck;
 import model.Card;
+import model.Shop;
 import model.User;
-import utils.Reader;
 
-public class Manager {
+public abstract class Manager {
+    
+    static final Shop SHOP = Shop.getInstance();
 
     public static void initStartingData() {
         UserManager.addUser("user_01", "123");
@@ -15,36 +16,89 @@ public class Manager {
         UserManager.addUser("user_03", "123");
         UserManager.addUser("user_04", "123");
 
-        CardManager.addCard("Carta_01", 0, 0, 0, 0);
-        CardManager.addCard("Carta_02", 0, 0, 0, 0);
-        CardManager.addCard("Carta_03", 0, 0, 0, 0);
+        SHOP.newCard("Troop", "Carta_01", 50, 5, 20, 2);
+        SHOP.newCard("Troop", "Carta_02", 25, 20, 5, 2);
+        SHOP.newCard("Troop", "Carta_03", 40, 30, 10, 5);
+        SHOP.newCard("Structure", "Carta_04", 0, 0, 0, 0);
+        SHOP.newCard("Structure", "Carta_05", 0, 0, 0, 0);
+        SHOP.newCard("Structure", "Carta_06", 0, 0, 0, 0);
+        SHOP.newCard("Spell", "Carta_07", 0, 0, 0, 0);
+        SHOP.newCard("Spell", "Carta_08", 0, 0, 0, 0);
+        SHOP.newCard("Spell", "Carta_09", 0, 0, 0, 0);
+        
+        /* TO TEST */
+        User user_01 = UserManager.validateUser("user_01", "123");
+        User user_02 = UserManager.validateUser("user_02", "123");
+        user_01.getDeck().addCard(SHOP.getCards().get(0));
+        user_01.getDeck().addCard(SHOP.getCards().get(1));
+        user_01.getDeck().addCard(SHOP.getCards().get(2));
+        user_02.getDeck().addCard(SHOP.getCards().get(0));
+        user_02.getDeck().addCard(SHOP.getCards().get(1));
+        user_02.getDeck().addCard(SHOP.getCards().get(2));
     }
 
-    public static User askForLogin() {
-        System.out.println("Username:");
-        String username = Reader.nextString();
-        System.out.println("Password:");
-        String password = Reader.nextString();
-
-        return UserManager.validateUser(username, password);
+    public static void getNewCard() {
+        final int MAX_USER_CARDS = 6;
+        
+        User user = ViewManager.askForLogin();
+        Deck userDeck = user.getDeck();
+        
+        // Show user cards
+        ViewManager.showDeck(userDeck, "These are your cards");
+        
+        // Make sure user is not card capped
+        if (userDeck.getCards().size() >= MAX_USER_CARDS)
+            throw new NullPointerException("You have reached the maximum number of cards allowed ("+MAX_USER_CARDS+").");
+        
+        // Show shop and ask user for a card he doesn't already have
+        ViewManager.showDeck(SHOP, "*** Shop Cards ***", 1);
+        Card cardChoice = ViewManager.chooseCardFromDeck(SHOP, userDeck);
+        
+        if (userDeck.addCard(cardChoice))
+            ViewManager.soutNewAddedCard(cardChoice);
+        else throw new NullPointerException("There was an error when adding your new card");
     }
-
-    public static void showCardsByUser(User user) {
-        ArrayList<Card> userDeck = user.getDeck();
-
-        if (!userDeck.isEmpty()) {
-            for (Card card : userDeck) {
-                System.out.println("Name: " + card.getName() + " / Attack: " + card.getAtk() + " / Defense: " + card.getDef());
-            }
-        } else System.out.println("The user " + user.getUsername() + " has no cards :(");
-    }
-
+    
     public static void battle() {
+        final int PLAYER_NUM_CARDS = 3;
+        final int PLAYER_ELIXIR_CAP = 10;
+        
         // Validate both players
-        User player_01 = askForLogin();
-        User player_02 = askForLogin();
-
-        // TO DO
-        showCardsByUser(player_01);
+        User player_01 = ViewManager.askForLogin();
+        User player_02 = ViewManager.askForLogin();
+        
+        // Decks used in battle (not whole user decks)
+        Deck player_01_battleDeck = buildBattleDeck(player_01, PLAYER_NUM_CARDS, PLAYER_ELIXIR_CAP);
+    }
+    
+    static Deck buildBattleDeck(User user, int cards, int elixirCap) {
+        int elixirLeftToSpend = elixirCap;
+        
+        ViewManager.showDeck(user.getDeck(), "*** Player 1 ***");
+        
+        Deck battleDeck = new Deck();
+        for (int i = 0; i < cards; i++) {
+            Card cardChoice = ViewManager.chooseCardFromDeck(user.getDeck(), battleDeck);
+            addCardToBattleDeck(battleDeck, cardChoice, elixirLeftToSpend);
+        }
+        
+        return null;
+    }
+    
+//    static Deck buildValidChoicesDeck(Deck deck, int maxElixirCost) {
+//        Deck validChoices = new Deck();
+//        for (Card card : deck.getCards()) {
+//            if (card.getCost() <= maxElixirCost)
+//                validChoices.addCard(card);
+//        }
+//        
+//        return validChoices;
+//    }
+    
+    static boolean addCardToBattleDeck(Deck deck, Card card, int maxElixirCost) {
+        if (card.getCost() <= maxElixirCost) {
+            deck.getCards().add(card);
+            return true;
+        } else return false;
     }
 }

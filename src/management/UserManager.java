@@ -17,7 +17,11 @@ public class UserManager {
         return null;
     }
 
-    public static User validateUser(String username, String password) throws NullPointerException {
+    /**
+     * @return User if login was correct
+     * @throws NullPointerException 
+     */
+    public static User validateUser(String username, String password) {
         for (User user : users) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password))
                 return user;

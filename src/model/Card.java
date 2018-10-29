@@ -50,4 +50,9 @@ public class Card {
     public void setCost(int cost) {
         this.cost = cost;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " - " + getName() + " // HP: " + getHp() + " // Atk: " + getAtk() + " // Def: " + getDef() + " // Elixir cost: " + getCost();
+    }
 }

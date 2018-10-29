@@ -5,6 +5,12 @@ import management.Manager;
 import utils.Reader;
 
 public class StucomRoyale {
+    
+    /*
+        *** TO MAYBE DO ***
+        - getNewCard() >> getNewCards()
+    */
+    
     public static void main(String[] args) {
         // Menu variables
         boolean exit = false;
@@ -16,8 +22,8 @@ public class StucomRoyale {
         // App loop
         while (!exit) {
             System.out.println(
-                "*** Stucom Royale ***\n"
-                + "1 - Get cards\n"
+                "\n*** Stucom Royale ***\n"
+                + "1 - Get new cards\n"
                 + "2 - Battle\n"
                 + "3 - Ranking\n"
                 + "0 - Exit\n"
@@ -31,8 +37,10 @@ public class StucomRoyale {
                 try {
                     switch (menuOption) {
                         case 1: // GET CARD
+                            Manager.getNewCard();
                             break;
                         case 2: // BATTLE
+                            Manager.battle();
                             break;
                         case 3: // RANKING
                             break;

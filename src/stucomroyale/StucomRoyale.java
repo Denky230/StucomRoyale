@@ -5,12 +5,14 @@ import management.Manager;
 import utils.Reader;
 
 public class StucomRoyale {
-    
+
     /*
+        *** TO DO ***
+        - make sure user cant add more cards than he can hold
         *** TO MAYBE DO ***
         - getNewCard() >> getNewCards()
     */
-    
+
     public static void main(String[] args) {
         // Menu variables
         boolean exit = false;
@@ -37,7 +39,7 @@ public class StucomRoyale {
                 try {
                     switch (menuOption) {
                         case 1: // GET CARD
-                            Manager.getNewCard();
+                            Manager.getNewCards();
                             break;
                         case 2: // BATTLE
                             Manager.battle();
